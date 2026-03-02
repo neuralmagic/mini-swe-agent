@@ -114,7 +114,8 @@ agent:
 
 environment:
   cwd: "/testbed"
-  timeout: 60
+  timeout: 300
+  pull_timeout: 600
   interpreter: ["bash", "-c"]
   env:
     PAGER: cat
@@ -170,8 +171,12 @@ model:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  model_name: "anthropic/claude-sonnet-4-5-20250929"
+  model_name: "hosted_vllm/inference-optimization/Qwen3-Coder-Next.w4a16"
   model_kwargs:
-    drop_params: true
-    temperature: 0.0
+    api_base: "http://localhost:8000/v1"
+    api_key: ""
+    #drop_params: true
+    temperature: 1.0
+    top_p: 0.95
+    top_k: 40
     parallel_tool_calls: true

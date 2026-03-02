@@ -50,6 +50,8 @@ Examples:
 
 DEFAULT_CONFIG_FILE = builtin_config_dir / "benchmarks" / "swebench.yaml"
 
+DEFAULT_IMAGE_REPOSITORY_PREFIX = "nmmlops/swebench"
+
 DATASET_MAPPING = {
     "full": "princeton-nlp/SWE-Bench",
     "verified": "princeton-nlp/SWE-Bench_Verified",
@@ -87,6 +89,8 @@ def get_swebench_docker_image_name(instance: dict) -> str:
         iid = instance["instance_id"]
         id_docker_compatible = iid.replace("__", "_1776_")
         image_name = f"docker.io/swebench/sweb.eval.x86_64.{id_docker_compatible}:latest".lower()
+
+    image_name = image_name.replace("docker.io", "quay.io").replace("swebench/", f"{DEFAULT_IMAGE_REPOSITORY_PREFIX}:").split(":latest")[0]
     return image_name
 
 
