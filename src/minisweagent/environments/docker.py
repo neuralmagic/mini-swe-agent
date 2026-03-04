@@ -163,7 +163,7 @@ class DockerEnvironment:
             cmd,
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=20,
             check=True,
         )
 
@@ -172,8 +172,8 @@ class DockerEnvironment:
             cmd,
             capture_output=True,
             text=True,
-            timeout=10,
-            check=False,
+            timeout=20,
+            check=True,
         )
 
 
