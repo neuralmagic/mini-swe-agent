@@ -155,24 +155,38 @@ class DockerEnvironment:
     def cleanup(self):
         """Stop and remove the Docker container."""
         if getattr(self, "container_id", None) is not None:  # if init fails early, container_id might not be set
-            cmd = f"(timeout 60 {self.config.executable} stop {self.container_id} || {self.config.executable} rm -f {self.container_id}) >/dev/null 2>&1 &"
-            subprocess.Popen(cmd, shell=True)
+            cmd = [self.config.executable, "stop", self.container_id ]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=self.config.pull_timeout,
+                check=True,
+            )
+            cmd = [self.config.executable, "rm", "-f", self.container_id ]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=self.config.pull_timeout,
+                check=True,
+            )
 
         cmd = [self.config.executable, "rmi", "-f", self.config.image]
-        result = subprocess.run(
+        subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=20,
+            timeout=self.config.pull_timeout,
             check=True,
         )
 
-        cmd = [self.config.executable, "image", "prune", "-f"]
-        result = subprocess.run(
+        cmd = [self.config.executable, "image", "prune", "-a", "-f"]
+        subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=20,
+            timeout=self.config.pull_timeout,
             check=True,
         )
 
