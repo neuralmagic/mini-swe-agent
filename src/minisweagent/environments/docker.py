@@ -33,7 +33,7 @@ class DockerEnvironmentConfig(BaseModel):
     """
     container_timeout: str = "2h"
     """Max duration to keep container running. Uses the same format as the sleep command."""
-    pull_timeout: int = 120
+    pull_timeout: int = 300
     """Timeout in seconds for pulling images."""
     interpreter: list[str] = ["bash", "-lc"]
     """Interpreter to use to execute commands. Default is ["bash", "-lc"].
@@ -87,6 +87,8 @@ class DockerEnvironment:
             "sleep",
             self.config.container_timeout,
         ]
+
+
         self.logger.debug(f"Starting container with command: {shlex.join(cmd)}")
         result = subprocess.run(
             cmd,
@@ -153,8 +155,41 @@ class DockerEnvironment:
     def cleanup(self):
         """Stop and remove the Docker container."""
         if getattr(self, "container_id", None) is not None:  # if init fails early, container_id might not be set
-            cmd = f"(timeout 60 {self.config.executable} stop {self.container_id} || {self.config.executable} rm -f {self.container_id}) >/dev/null 2>&1 &"
-            subprocess.Popen(cmd, shell=True)
+            cmd = [self.config.executable, "stop", self.container_id ]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+            )
+            cmd = [self.config.executable, "rm", "-f", self.container_id ]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+            )
+
+        cmd = [self.config.executable, "rmi", "-f", self.config.image]
+        subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=True,
+        )
+
+        cmd = [self.config.executable, "image", "prune", "-a", "-f"]
+        subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            check=True,
+        )
+
 
     def __del__(self):
         """Cleanup container when object is destroyed."""
