@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from minisweagent.exceptions import Submitted
 from minisweagent.utils.serialize import recursive_merge
 
+CONTAINER_IMAGE_CLEANUP = os.environ.get("CONTAINER_IMAGE_CLEANUP", False)
 
 class DockerEnvironmentConfig(BaseModel):
     image: str
@@ -172,23 +173,25 @@ class DockerEnvironment:
                 check=True,
             )
 
-        cmd = [self.config.executable, "rmi", "-f", self.config.image]
-        subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=True,
-        )
+        if CONTAINER_IMAGE_CLEANUP:
 
-        cmd = [self.config.executable, "image", "prune", "-a", "-f"]
-        subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=True,
-        )
+            cmd = [self.config.executable, "rmi", "-f", self.config.image]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+            )
+    
+            cmd = [self.config.executable, "image", "prune", "-a", "-f"]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=True,
+            )
 
 
     def __del__(self):
