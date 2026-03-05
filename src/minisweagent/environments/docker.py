@@ -161,7 +161,7 @@ class DockerEnvironment:
                 capture_output=True,
                 text=True,
                 timeout=30,
-                check=False,
+                check=True,
             )
             cmd = [self.config.executable, "rm", "-f", self.container_id ]
             subprocess.run(
