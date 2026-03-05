@@ -160,7 +160,7 @@ class DockerEnvironment:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=self.config.pull_timeout,
+                timeout=30,
                 check=True,
             )
             cmd = [self.config.executable, "rm", "-f", self.container_id ]
@@ -168,7 +168,7 @@ class DockerEnvironment:
                 cmd,
                 capture_output=True,
                 text=True,
-                timeout=self.config.pull_timeout,
+                timeout=30,
                 check=True,
             )
 
@@ -177,7 +177,7 @@ class DockerEnvironment:
             cmd,
             capture_output=True,
             text=True,
-            timeout=self.config.pull_timeout,
+            timeout=30,
             check=True,
         )
 
@@ -186,7 +186,7 @@ class DockerEnvironment:
             cmd,
             capture_output=True,
             text=True,
-            timeout=self.config.pull_timeout,
+            timeout=30,
             check=True,
         )
 
