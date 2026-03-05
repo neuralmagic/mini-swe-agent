@@ -161,7 +161,7 @@ class DockerEnvironment:
                 capture_output=True,
                 text=True,
                 timeout=30,
-                check=True,
+                check=False,
             )
             cmd = [self.config.executable, "rm", "-f", self.container_id ]
             subprocess.run(
@@ -169,7 +169,7 @@ class DockerEnvironment:
                 capture_output=True,
                 text=True,
                 timeout=30,
-                check=True,
+                check=False,
             )
 
         cmd = [self.config.executable, "rmi", "-f", self.config.image]
@@ -178,7 +178,7 @@ class DockerEnvironment:
             capture_output=True,
             text=True,
             timeout=30,
-            check=True,
+            check=False,
         )
 
         cmd = [self.config.executable, "image", "prune", "-a", "-f"]
@@ -187,7 +187,7 @@ class DockerEnvironment:
             capture_output=True,
             text=True,
             timeout=30,
-            check=True,
+            check=False,
         )
 
 
