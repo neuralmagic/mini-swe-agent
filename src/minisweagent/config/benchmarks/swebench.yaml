@@ -171,7 +171,7 @@ model:
 
     If you have completed your assignment, please consult the first message about how to
     submit your solution (you will not be able to continue working on this task after that).
-  model_name: "hosted_vllm/inference-optimization/Qwen3-Coder-Next.w8a8"
+  model_name: "hosted_vllm/Qwen/Qwen3-Coder-Next"
   model_kwargs:
     api_base: "http://localhost:8000/v1"
     api_key: ""
