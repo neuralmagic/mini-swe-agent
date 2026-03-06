@@ -11,6 +11,7 @@ from pydantic import BaseModel
 from minisweagent.exceptions import Submitted
 from minisweagent.utils.serialize import recursive_merge
 
+CONTAINER_IMAGE_CLEANUP = os.environ.get("CONTAINER_IMAGE_CLEANUP", False)
 
 class DockerEnvironmentConfig(BaseModel):
     image: str
@@ -74,6 +75,9 @@ class DockerEnvironment:
     def _start_container(self):
         """Start the Docker container and return the container ID."""
         container_name = f"minisweagent-{uuid.uuid4().hex[:8]}"
+        if self.config.executable == "podman":
+            self.config.run_args = ["--userns=keep-id", "--security-opt", "label=disable",  "--rm"]
+
         cmd = [
             self.config.executable,
             "run",
@@ -87,7 +91,6 @@ class DockerEnvironment:
             "sleep",
             self.config.container_timeout,
         ]
-
 
         self.logger.debug(f"Starting container with command: {shlex.join(cmd)}")
         result = subprocess.run(
@@ -172,23 +175,24 @@ class DockerEnvironment:
                 check=False,
             )
 
-        cmd = [self.config.executable, "rmi", "-f", self.config.image]
-        subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
+        if CONTAINER_IMAGE_CLEANUP:
+            cmd = [self.config.executable, "rmi", "-f", self.config.image]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
 
-        cmd = [self.config.executable, "image", "prune", "-a", "-f"]
-        subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=30,
-            check=False,
-        )
+            cmd = [self.config.executable, "image", "prune", "-a", "-f"]
+            subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=30,
+                check=False,
+            )
 
 
     def __del__(self):
